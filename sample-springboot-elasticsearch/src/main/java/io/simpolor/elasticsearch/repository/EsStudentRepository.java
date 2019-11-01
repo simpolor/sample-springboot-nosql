@@ -3,11 +3,13 @@ package io.simpolor.elasticsearch.repository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.simpolor.elasticsearch.domain.Student;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.ElasticsearchException;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -66,7 +68,28 @@ public class EsStudentRepository {
     }
 
     public List<Student> selectStudentList(){
-        return null;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            SearchResponse response
+                    = client.prepareSearch("student")
+                    .setTypes("doc")
+                    .setSize(1000)
+                    .get();
+
+            List<Student> students = new ArrayList<>();
+            SearchHit[] searchHits = response.getHits().getHits();
+            for (SearchHit hit : searchHits) {
+                Student student = objectMapper.readValue(hit.getSourceAsString(), Student.class);
+                students.add(student);
+            }
+            return students;
+
+        }catch (IOException ioe){
+            ioe.printStackTrace();
+        }
+
+        return Collections.EMPTY_LIST;
     }
 
     public Student selectStudent(String id){
@@ -116,7 +139,8 @@ public class EsStudentRepository {
         return student;
     }
 
-    public int deleteStudent(String id){
-        return 0;
+    public void deleteStudent(String id){
+        DeleteResponse response = client.prepareDelete("student", "doc", id).get();
+        System.out.println("DeleteResponse.getId : "+response.getId());
     }
 }

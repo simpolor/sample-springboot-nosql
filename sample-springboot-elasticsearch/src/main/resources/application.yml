@@ -1,5 +1,5 @@
 server:
-  port: 8087
+  port: 8080
 
 # 현재 동작되지 않음.
 spring:
