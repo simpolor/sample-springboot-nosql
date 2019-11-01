@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+redisson:
+  database: 0
+  hostname: localhost
+  port: 6379
+  password:
+  timeout: 20000
+  cluster-enabled: false
+  pool:
+    max-total: 10
+    max-idle: 5
+    max-wait-millis: 3000
+

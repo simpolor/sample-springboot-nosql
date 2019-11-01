@@ -1,0 +1,44 @@
+# 전체 카운트
+GET http://127.0.0.1:8080/student/totalcount
+
+###
+
+# Student 리스트
+GET http://127.0.0.1:8080/student/list
+
+###
+
+# Student 조회
+GET http://127.0.0.1:8080/student/4add5acd-7d1a-4967-8ec9-9f9e2884189d
+
+###
+
+# Student 등록
+POST http://127.0.0.1:8080/student
+Content-Type: application/json
+
+{
+  "name": "박석영",
+  "grade": 2,
+  "age": 18,
+  "hobby": ["축구"]
+}
+
+###
+
+# Student 수정
+PUT http://127.0.0.1:8080/student/4add5acd-7d1a-4967-8ec9-9f9e2884189d
+Content-Type: application/json
+
+{
+  "name": "박석영",
+  "grade": 2,
+  "age": 19,
+  "hobby": ["축구", "프로그래밍"]
+}
+###
+
+# Student 삭제
+DELETE http://127.0.0.1:8080/student/4add5acd-7d1a-4967-8ec9-9f9e2884189d
+
+###
