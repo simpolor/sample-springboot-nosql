@@ -1,0 +1,11 @@
+server:
+  port: 8087
+
+# 현재 동작되지 않음.
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  data:
+    elasticsearch:
+      cluster-nodes: localhost:9300
+      cluster-name: elasticsearch
