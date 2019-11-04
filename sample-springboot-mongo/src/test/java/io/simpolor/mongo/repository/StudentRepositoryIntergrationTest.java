@@ -5,6 +5,8 @@ import io.simpolor.mongo.domain.Student;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -12,6 +14,7 @@ import java.util.Arrays;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MongoApplication.class)
+@EnableAutoConfiguration(exclude={EmbeddedMongoAutoConfiguration.class})
 public class StudentRepositoryIntergrationTest {
 
     @Autowired
