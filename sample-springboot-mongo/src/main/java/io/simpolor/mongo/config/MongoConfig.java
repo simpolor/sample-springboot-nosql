@@ -11,14 +11,14 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 @Configuration
 public class MongoConfig extends AbstractMongoConfiguration {
 
+    @Value("${spring.data.mongodb.database}")
+    private String database;
+
     @Value("${spring.data.mongodb.host}")
     private String host;
 
     @Value("${spring.data.mongodb.port}")
     private int port;
-
-    @Value("${spring.data.mongodb.database}")
-    private String database;
 
     @Override
     public MongoClient mongoClient() {
