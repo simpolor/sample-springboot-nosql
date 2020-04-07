@@ -2,14 +2,23 @@ package io.simpolor.elasticsearch.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.simpolor.elasticsearch.domain.SearchAfter;
 import io.simpolor.elasticsearch.domain.Student;
+import io.simpolor.elasticsearch.util.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.ElasticsearchException;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -17,10 +26,14 @@ import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Repository
-public class EsStudentRepository {
+public class SearchAfterStudentRepository {
+
+    public static final String HISTORY_SEARCHAFTER_REGEX = "-";
 
     @Autowired
     private Client client;
@@ -67,30 +80,59 @@ public class EsStudentRepository {
         return response.getHits().totalHits;
     }
 
-    public List<Student> selectStudentList(){
+    public SearchAfter<Student> selectStudentList(String searchAfter){
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // 검색 조건
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        // boolQueryBuilder.must(termQuery("uid", id));
+
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder()
+                .query(boolQueryBuilder)
+                .size(5)
+                .sort(SortBuilders.fieldSort("seq").order(SortOrder.ASC))
+                .timeout(new TimeValue(60, TimeUnit.SECONDS));
+
+        if(!StringUtils.isEmpty(searchAfter)){
+            sourceBuilder.searchAfter(decodeSearchAfter(searchAfter));
+        }
+
+        SearchResponse response = client.prepareSearch("student")
+                .setTypes("doc")
+                .setSource(sourceBuilder)
+                .get();
+
+        List<Student> students = new ArrayList<>();
+        SearchHit[] searchHits = response.getHits().getHits();
+
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            SearchResponse response
-                    = client.prepareSearch("student")
-                    .setTypes("doc")
-                    .setSize(1000)
-                    .get();
-
-            List<Student> students = new ArrayList<>();
-            SearchHit[] searchHits = response.getHits().getHits();
             for (SearchHit hit : searchHits) {
                 Student student = objectMapper.readValue(hit.getSourceAsString(), Student.class);
-                student.setId(hit.getId());
                 students.add(student);
             }
-            return students;
-
         }catch (IOException ioe){
             ioe.printStackTrace();
         }
 
-        return Collections.EMPTY_LIST;
+        int totalCount = (int)response.getHits().getTotalHits();
+        int listCount = response.getHits().getHits().length;
+
+        System.out.println("totalCount : "+totalCount);
+        System.out.println("listCount : "+listCount);
+
+        if(listCount > 0){
+            Object[] lastSortValues = Arrays.stream(response.getHits().getHits())
+                    .reduce((first, second) -> second)
+                    .map(s -> s.getSortValues())
+                    .get();
+
+            String key = encodeSearchAfter(lastSortValues);
+            System.out.println("key : " +key);
+            return new SearchAfter(students, key, totalCount);
+        }
+
+        return new SearchAfter(students, "", totalCount);
     }
 
     public Student selectStudent(String id){
@@ -145,5 +187,20 @@ public class EsStudentRepository {
     public void deleteStudent(String id){
         DeleteResponse response = client.prepareDelete("student", "doc", id).get();
         System.out.println("DeleteResponse.getId : "+response.getId());
+    }
+
+    public Object[] decodeSearchAfter(String searchAfter){
+        byte[] decodeBytes =  Base64.decode(searchAfter.getBytes());
+        String decode = new String(decodeBytes);
+
+        return Arrays.stream(decode.split(HISTORY_SEARCHAFTER_REGEX)).toArray();
+    }
+
+    private String encodeSearchAfter(Object[] sortValues) {
+        if(sortValues.length > 0){
+            String searchAfter = Arrays.stream(sortValues).map(Object::toString).collect(Collectors.joining(HISTORY_SEARCHAFTER_REGEX));
+            return new String(Base64.encode(searchAfter.getBytes()));
+        }
+        return StringUtils.EMPTY;
     }
 }

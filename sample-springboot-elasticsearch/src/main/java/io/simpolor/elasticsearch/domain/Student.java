@@ -20,6 +20,8 @@ public class Student {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String id;
 
+	private int seq;
+
 	private String name;
 
 	private int grade;
@@ -30,8 +32,9 @@ public class Student {
 
 	public Student(){ }
 
-	public Student(String id, String name, int grade, int age, List<String> hobby) {
+	public Student(String id, int seq, String name, int grade, int age, List<String> hobby) {
 		this.id = id;
+		this.seq = seq;
 		this.name = name;
 		this.grade = grade;
 		this.age = age;

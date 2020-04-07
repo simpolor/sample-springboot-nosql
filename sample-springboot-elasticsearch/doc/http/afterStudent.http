@@ -1,24 +1,24 @@
 # 전체 카운트
-GET http://127.0.0.1:8080/es/student/totalcount
+GET http://127.0.0.1:8080/after/student/totalcount
 
 ###
 
 # Student 리스트
-GET http://127.0.0.1:8080/es/student/list
+GET http://127.0.0.1:8080/after/student/list?search_after=
 
 ###
 
 # Student 조회
-GET http://127.0.0.1:8080/es/student/AWr8GYGVIfBOFUGuoagj
+GET http://127.0.0.1:8080/after/student/AWr8GYGVIfBOFUGuoagj
 
 ###
 
 # Student 등록
-POST http://127.0.0.1:8080/es/student
+POST http://127.0.0.1:8080/after/student
 Content-Type: application/json
 
 {
-  "seq": 1,
+  "seq": 16,
   "name": "박석영",
   "grade": 2,
   "age": 18,
@@ -28,10 +28,11 @@ Content-Type: application/json
 ###
 
 # Student 수정
-PUT http://127.0.0.1:8080/es/student/AWr8GYGVIfBOFUGuoagj
+PUT http://127.0.0.1:8080/after/student/AWr8GYGVIfBOFUGuoagj
 Content-Type: application/json
 
 {
+  "seq": 1,
   "name": "박석영",
   "grade": 2,
   "age": 18,
@@ -40,6 +41,6 @@ Content-Type: application/json
 ###
 
 # Student 삭제
-DELETE http://127.0.0.1:8080/es/student/AWr77z8wIfBOFUGuoagZ
+DELETE http://127.0.0.1:8080/after/student/AWr77z8wIfBOFUGuoagZ
 
 ###

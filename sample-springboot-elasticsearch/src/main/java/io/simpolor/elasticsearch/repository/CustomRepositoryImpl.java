@@ -17,6 +17,7 @@ public class CustomRepositoryImpl implements CustomRepository {
     public Student update(Student student) {
 
         Map<String, Object> json = new HashMap<>();
+        json.put("seq", student.getSeq());
         json.put("name", student.getName());
         json.put("grade",student.getGrade());
         json.put("age", student.getAge());

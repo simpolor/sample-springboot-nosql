@@ -18,6 +18,7 @@ POST http://127.0.0.1:8080/student
 Content-Type: application/json
 
 {
+  "seq": 1,
   "name": "박석영",
   "grade": 2,
   "age": 18,
