@@ -20,8 +20,10 @@ public class SearchAfterStudentController {
 
 	@RequestMapping(value="/list", method= RequestMethod.GET)
 	public SearchAfter<Student> studentList(
-			@RequestParam(defaultValue = "", required = false, name="search_after") String searchAfter) {
-		return afterStudentService.getStudentList(searchAfter);
+			@RequestParam(defaultValue = "", required = false, name="search_after") String searchAfter,
+			@RequestParam(defaultValue = "10", required = false, name="size") int size
+	) {
+		return afterStudentService.getStudentList(searchAfter, size);
 	}
 
 	@RequestMapping(value="/{id}", method= RequestMethod.GET)
@@ -31,7 +33,7 @@ public class SearchAfterStudentController {
 
 	@RequestMapping(value="", method= RequestMethod.POST)
 	public Student studentRegister(@RequestBody Student student) {
-		System.out.println("Student.seq :"+student.getSeq());
+
 		return afterStudentService.registerStudent(student);
 	}
 

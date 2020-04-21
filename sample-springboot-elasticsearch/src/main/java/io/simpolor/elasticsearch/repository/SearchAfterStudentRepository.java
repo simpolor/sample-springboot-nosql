@@ -80,7 +80,7 @@ public class SearchAfterStudentRepository {
         return response.getHits().totalHits;
     }
 
-    public SearchAfter<Student> selectStudentList(String searchAfter){
+    public SearchAfter<Student> selectStudentList(String searchAfter, int size){
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -90,7 +90,7 @@ public class SearchAfterStudentRepository {
 
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder()
                 .query(boolQueryBuilder)
-                .size(5)
+                .size(size)
                 .sort(SortBuilders.fieldSort("seq").order(SortOrder.ASC))
                 .timeout(new TimeValue(60, TimeUnit.SECONDS));
 
@@ -118,21 +118,17 @@ public class SearchAfterStudentRepository {
         int totalCount = (int)response.getHits().getTotalHits();
         int listCount = response.getHits().getHits().length;
 
-        System.out.println("totalCount : "+totalCount);
-        System.out.println("listCount : "+listCount);
-
+        String key = "";
         if(listCount > 0){
             Object[] lastSortValues = Arrays.stream(response.getHits().getHits())
                     .reduce((first, second) -> second)
                     .map(s -> s.getSortValues())
                     .get();
 
-            String key = encodeSearchAfter(lastSortValues);
-            System.out.println("key : " +key);
-            return new SearchAfter(students, key, totalCount);
+            key = encodeSearchAfter(lastSortValues);
         }
 
-        return new SearchAfter(students, "", totalCount);
+        return new SearchAfter(students, key, totalCount);
     }
 
     public Student selectStudent(String id){

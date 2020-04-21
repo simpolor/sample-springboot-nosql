@@ -6,8 +6,6 @@ import io.simpolor.elasticsearch.repository.SearchAfterStudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class SearchAfterStudentService {
 
@@ -18,8 +16,8 @@ public class SearchAfterStudentService {
         return afterStudentRepository.selectStudentTotalCount();
     }
 
-    public SearchAfter<Student> getStudentList(String searchAfter) {
-        return afterStudentRepository.selectStudentList(searchAfter);
+    public SearchAfter<Student> getStudentList(String searchAfter, int size) {
+        return afterStudentRepository.selectStudentList(searchAfter, size);
     }
 
     public Student getStudent(String id) {
