@@ -1,0 +1,35 @@
+### Student 목록
+GET http://127.0.0.1:8080/students
+
+
+### Student 목록 ( searchAfter )
+GET http://127.0.0.1:8080/students/search-after?searchAfter=&size=1
+
+
+### Student 조회
+GET http://127.0.0.1:8080/students/NQVnHpUBS1UGF0rS5v-Y
+
+
+### Student 등록
+POST http://127.0.0.1:8080/students
+Content-Type: application/json
+
+{
+  "name": "박석영",
+  "grade": 2,
+  "age": 18
+}
+
+
+### Student 수정
+PUT http://127.0.0.1:8080/students/PO1UMZUBRhAgGOZDwtyS
+Content-Type: application/json
+
+{
+  "name": "박석영",
+  "grade": 3,
+  "age": 19
+}
+
+### Student 삭제
+DELETE http://127.0.0.1:8080/students/NX5pMpUBUj_EN84KFRXi
